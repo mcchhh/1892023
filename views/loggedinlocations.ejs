@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Locations</title>
+  <title>Logged in Locations</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
   <link rel="stylesheet" href="/css/loggedinlocations.css">
   <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
@@ -13,10 +13,8 @@
   <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" >
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
-
 </head>
 <body>
-
   <!-- Header -->
   <header class="container-fluid bg-dark text-center py-3" >
     <h1 class="text-white">CarParko</h1>
@@ -30,7 +28,7 @@
             <a class="nav-link" href="loggedinhome">Home</a>
           </li>
           <li class="nav-item" style="margin-left:20px">
-            <a class="nav-link" href="loggedinlocations">Locations</a>
+            <a class="nav-link" href="loggedinlocationsnew">Locations</a>
           </li>
           <li class="nav-item" style="margin-left:20px">
             <a class="nav-link" href="favourites">Favourites</a>
@@ -43,93 +41,93 @@
       </div>
     </nav>
 
-  <!-- Add a logout confirmation modal -->
-  <div id="logoutConfirmationModal" class="modal">
-    <div class="modal-content">
-    <span class="close" id="closeLogoutModal">&times;</span>
-    <p>Are you sure you want to log out?</p>
-    <button class="button" id="confirmLogoutBtn" action="/home" method="GET">Confirm Logout</button>
+    <!-- Add a logout confirmation modal -->
+    <div id="logoutConfirmationModal" class="modal">
+      <div class="modal-content">
+      <span class="close" id="closeLogoutModal">&times;</span>
+      <p>Are you sure you want to log out?</p>
+      <button class="button" id="confirmLogoutBtn" action="/home" method="GET">Confirm Logout</button>
     </div>
-</div>
+  
 
   
-  <!-- Search Bar -->
-  <div class="container-fluid text-center py-3">
-    <div class="d-flex justify-content-center">
-    <form id="filter-form" class="form-inline">
-      <h3>Search here:</h3>
-      <br>
-        <input id="filter-input" type="text" class="form-control mr-2" placeholder="Where would you like to go...">
+    <!-- Search Bar -->
+    <div class="container-fluid text-center py-3">
+      <div class="d-flex justify-content-center">
+      <form id="filter-form" class="form-inline">
+        <h3>Search here:</h3>
         <br>
-        <button type="submit" class="btn btn-primary">Search</button>
-        <!-- Reset Button -->
-        <button id="reset-button" class="btn btn-secondary">Reset</button>
-      </div>
-    </form>
-  </div>
+          <input id="filter-input" type="text" class="form-control mr-2" placeholder="Where would you like to go...">
+          <br>
+          <button type="submit" class="btn btn-primary">Search</button>
+          <!-- Reset Button -->
+          <button id="reset-button" class="btn btn-secondary">Reset</button>
+        </div>
+      </form>
+    </div>
 
 
 
 
 
-  <!-- Scrollable Table Container -->
-  <div class="table-container">
-    <table class="table">
-      <!-- Table header -->
-      <thead>
-        <tr>
-        
-          <!-- <th>Carpark Number</th> -->
-          <th>Save to Favourites</th>
-          <th>Address</th>
-          <th>Total Lots</th>
-          <th>Lots Available</th>
-          <th>Car Park Type</th>
-          <th>Free Parking</th>
-          <th>Night Parking</th>
-          <th>Share to Telegram</th>
-          <th>Share to Whatsapp</th>
-          <!-- <th>Short Term Parking</th>
-          <th>Car Park Type</th>
-          <th>Parking System</th> -->
-        </tr>
-      </thead>
-
-      <tbody id="tableBody">
-        <!-- Table rows will be dynamically generated here -->
-        <% for (const carpark of carparksData) { %>
+    <!-- Scrollable Table Container -->
+    <div class="table-container">
+      <table class="table">
+        <!-- Table header -->
+        <thead>
           <tr>
-            <td>
-              <button type="button" id="save-favourites">Save</button>
-            </td>
           
-            <!-- <td><%= carpark.carparkNumber %></td> -->
-            <% const matchingCarparkInfo = carparkInfoData.find(info => info.car_park_no === carpark.carparkNumber); %>
-            <!-- <% const matchingCarparkNewInfo = newcarparkinfoData.find(info => info.location === carparkinfo.address); %> -->
-            <!--<% console.log('Matching carparkInfo for', carpark.carparkNumber, ':', matchingCarparkInfo); %>-->
-            <td><a href="#map" class="title-case"><%= matchingCarparkInfo ? matchingCarparkInfo.address : 'N/A' %></a></td>
-            <!-- <td><%= newcarparkinfoData.length > 0 ? newcarparkinfoData.Area : 'N/A' %></td> -->
-            <!-- <td><%= matchingCarparkInfo ? matchingCarparkInfo.Area : 'N/A' %></td> -->
+            <!-- <th>Carpark Number</th> -->
+            <th>Save to Favourites</th>
+            <th>Address</th>
+            <th>Total Lots</th>
+            <th>Lots Available</th>
+            <th>Car Park Type</th>
+            <th>Free Parking</th>
+            <th>Night Parking</th>
+            <th>Share to Telegram</th>
+            <th>Share to Whatsapp</th>
+            <!-- <th>Short Term Parking</th>
+            <th>Car Park Type</th>
+            <th>Parking System</th> -->
+          </tr>
+        </thead>
 
-            <td><%= carpark.totalLots %></td>
-            <td><%= carpark.lotsAvailable %></td>
-            <td class="title-case"><%= matchingCarparkInfo ? matchingCarparkInfo.car_park_type : 'N/A' %></td>
-            <td class="title-case"><%= matchingCarparkInfo ? matchingCarparkInfo.free_parking : 'N/A' %></td>
-            <td class="title-case"><%= matchingCarparkInfo ? matchingCarparkInfo.night_parking : 'N/A' %></td>
-            <td>
-              <button type="button" id="save-to-telegram" class="custom-button" onclick="openTelegram()">Share Now</button>
-            </td>
-            <td>
-              <button type="button" id="save-to-whatsapp" class="custom-button-new" onclick="openWhatsapp()">Share Now</button>
-            </td>
-          </tr> 
-          
-        <% } %>
-     
-      </tbody>
+        <tbody id="tableBody">
+          <!-- Table rows will be dynamically generated here -->
+          <% for (const carpark of carparksData) { %>
+            <tr>
+              <td>
+                <button type="button" id="save-favourites">Save</button>
+              </td>
+            
+              <!-- <td><%= carpark.carparkNumber %></td> -->
+              <% const matchingCarparkInfo = carparkInfoData.find(info => info.car_park_no === carpark.carparkNumber); %>
+              
+              <!--<% console.log('Matching carparkInfo for', carpark.carparkNumber, ':', matchingCarparkInfo); %>-->
+              <td><a href="#map" class="title-case"><%= matchingCarparkInfo ? matchingCarparkInfo.address : 'N/A' %></a></td>
+              <!-- <td><%= newcarparkinfoData.length > 0 ? newcarparkinfoData.Area : 'N/A' %></td> -->
+              <!-- <td><%= matchingCarparkInfo ? matchingCarparkInfo.Area : 'N/A' %></td> -->
+
+              <td><%= carpark.totalLots %></td>
+              <td><%= carpark.lotsAvailable %></td>
+              <td class="title-case"><%= matchingCarparkInfo ? matchingCarparkInfo.car_park_type : 'N/A' %></td>
+              <td class="title-case"><%= matchingCarparkInfo ? matchingCarparkInfo.free_parking : 'N/A' %></td>
+              <td class="title-case"><%= matchingCarparkInfo ? matchingCarparkInfo.night_parking : 'N/A' %></td>
+              <td>
+                <button type="button" id="save-to-telegram" class="custom-button" onclick="openTelegram()">Share Now</button>
+              </td>
+              <td>
+                <button type="button" id="save-to-whatsapp" class="custom-button-new" onclick="openWhatsapp()">Share Now</button>
+              </td>
+            </tr> 
+            
+          <% } %>
       
-    </table>
-  </div>
+        </tbody>
+        
+      </table>
+    </div>
 
     <!-- Add this JavaScript code after including your table -->
   <script>
@@ -166,46 +164,45 @@
    <div id="map" style="width: 100%; height: 800px;"></div>
    <script>
 
-const map = L.map('map').setView([1.3521, 103.8198], 12);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    const map = L.map('map').setView([1.3521, 103.8198], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-// Fetch data from the server and add markers to the map
-fetch('/fetch-data')
-  .then((response) => response.json())
-  .then((data) => {
-    console.log(data); // Log the response data to the console
-    data.forEach((parking) => {
-      const { Location, Development, AvailableLots } = parking;
-      const [latitude, longitude] = Location.split(' ').map(parseFloat);
+    // Fetch data from the server and add markers to the map
+    fetch('/fetch-data')
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data); // Log the response data to the console
+        data.forEach((parking) => {
+          const { Location, Development, AvailableLots } = parking;
+          const [latitude, longitude] = Location.split(' ').map(parseFloat);
 
-      const popupContent = `
-        <strong>${Development}</strong><br>
-        Available Lots: ${AvailableLots}
-      `;
+          const popupContent = `
+            <strong>${Development}</strong><br>
+            Available Lots: ${AvailableLots}
+          `;
 
-      const marker = L.marker([latitude, longitude])
-        .addTo(map)
-        .bindPopup(`${Development}: Available Lots - ${AvailableLots}`)
-        .openPopup();
+          const marker = L.marker([latitude, longitude])
+            .addTo(map)
+            .bindPopup(`${Development}: Available Lots - ${AvailableLots}`)
+            .openPopup();
 
-      marker.on('click', () => {
-        const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
-        window.location.href = googleMapsUrl;
+          marker.on('click', () => {
+            const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
+            window.location.href = googleMapsUrl;
+          });
+
+          marker.on('mouseover', () => {
+            marker.bindTooltip(popupContent).openTooltip();
+          });
+
+          marker.on('mouseout', () => {
+            marker.closeTooltip();
+          });
+        });
+      })
+      .catch((error) => {
+        console.error(error);
       });
-
-      marker.on('mouseover', () => {
-        marker.bindTooltip(popupContent).openTooltip();
-      });
-
-      marker.on('mouseout', () => {
-        marker.closeTooltip();
-      });
-    });
-  })
-  .catch((error) => {
-    console.error(error);
-  });
-
 
   </script>
 
@@ -378,23 +375,22 @@ fetch('/fetch-data')
         }
       });
 
-      logoutBtn.addEventListener("click", () => {
-  // Display the logout confirmation modal
-  logoutConfirmationModal.style.display = "block";
-});
-closeLogoutModalBtn.addEventListener("click", () => {
-  // Close the logout confirmation modal
-  logoutConfirmationModal.style.display = "none";
-});
+    logoutBtn.addEventListener("click", () => {
+      // Display the logout confirmation modal
+      logoutConfirmationModal.style.display = "block";
+    });
+    closeLogoutModalBtn.addEventListener("click", () => {
+      // Close the logout confirmation modal
+      logoutConfirmationModal.style.display = "none";
+    });
 
-confirmLogoutBtn.addEventListener("click", () => {
-  // Redirect to the index page when confirming logout
-  window.location.href = "/home"; // Update the URL to your index page
-});
+    confirmLogoutBtn.addEventListener("click", () => {
+      // Redirect to the index page when confirming logout
+      window.location.href = "/home"; // Update the URL to your index page
+    });
 
 
   </script>
-
 
 
 </body>
