@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Logged in Locations</title>
+  <title>OLD logged in Locations</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
   <link rel="stylesheet" href="/css/loggedinlocations.css">
   <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
@@ -28,7 +28,7 @@
             <a class="nav-link" href="loggedinhome">Home</a>
           </li>
           <li class="nav-item" style="margin-left:20px">
-            <a class="nav-link" href="loggedinlocationsnew">Locations</a>
+            <a class="nav-link" href="loggedinlocations">Locations</a>
           </li>
           <li class="nav-item" style="margin-left:20px">
             <a class="nav-link" href="favourites">Favourites</a>
@@ -76,8 +76,6 @@
         <!-- Table header -->
         <thead>
           <tr>
-          
-            <!-- <th>Carpark Number</th> -->
             <th>Save to Favourites</th>
             <th>Address</th>
             <th>Total Lots</th>
@@ -87,28 +85,19 @@
             <th>Night Parking</th>
             <th>Share to Telegram</th>
             <th>Share to Whatsapp</th>
-            <!-- <th>Short Term Parking</th>
-            <th>Car Park Type</th>
-            <th>Parking System</th> -->
           </tr>
         </thead>
 
+        <!-- Table Body -->
         <tbody id="tableBody">
           <!-- Table rows will be dynamically generated here -->
           <% for (const carpark of carparksData) { %>
             <tr>
-              <td>
-                <button type="button" id="save-favourites">Save</button>
-              </td>
-            
-              <!-- <td><%= carpark.carparkNumber %></td> -->
+              <td><button type="button" id="save-favourites">Save</button></td>
               <% const matchingCarparkInfo = carparkInfoData.find(info => info.car_park_no === carpark.carparkNumber); %>
-              
-              <!--<% console.log('Matching carparkInfo for', carpark.carparkNumber, ':', matchingCarparkInfo); %>-->
-              <td><a href="#map" class="title-case"><%= matchingCarparkInfo ? matchingCarparkInfo.address : 'N/A' %></a></td>
-              <!-- <td><%= newcarparkinfoData.length > 0 ? newcarparkinfoData.Area : 'N/A' %></td> -->
-              <!-- <td><%= matchingCarparkInfo ? matchingCarparkInfo.Area : 'N/A' %></td> -->
-
+              <td class="title-case">
+                <a href="#map"><%= matchingCarparkInfo ? matchingCarparkInfo.address : 'N/A' %></a>
+              </td>
               <td><%= carpark.totalLots %></td>
               <td><%= carpark.lotsAvailable %></td>
               <td class="title-case"><%= matchingCarparkInfo ? matchingCarparkInfo.car_park_type : 'N/A' %></td>
@@ -121,11 +110,8 @@
                 <button type="button" id="save-to-whatsapp" class="custom-button-new" onclick="openWhatsapp()">Share Now</button>
               </td>
             </tr> 
-            
           <% } %>
-      
         </tbody>
-        
       </table>
     </div>
 
@@ -167,42 +153,97 @@
     const map = L.map('map').setView([1.3521, 103.8198], 12);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-    // Fetch data from the server and add markers to the map
     fetch('/fetch-data')
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data); // Log the response data to the console
-        data.forEach((parking) => {
-          const { Location, Development, AvailableLots } = parking;
-          const [latitude, longitude] = Location.split(' ').map(parseFloat);
+  .then((response) => response.json())
+  .then((data) => {
+    data.forEach((parking) => {
+      const { Location, Development, AvailableLots } = parking;
 
-          const popupContent = `
-            <strong>${Development}</strong><br>
-            Available Lots: ${AvailableLots}
-          `;
+      if (!Location || !/^\s*-?\d+(\.\d+)?\s+-?\d+(\.\d+)?\s*$/.test(Location)) {
+        console.warn(`Invalid Location format for Development: ${Development}`, Location);
+        
+        // Optional: Provide a fallback if Location is missing
+        const fallbackLatitude = 1.3521; // Default latitude (e.g., Singapore's latitude)
+        const fallbackLongitude = 103.8198; // Default longitude (e.g., Singapore's longitude)
+        const popupContent = `<strong>${Development}</strong><br>Location not available.`;
+        
+        L.marker([fallbackLatitude, fallbackLongitude])
+          .addTo(map)
+          .bindPopup(popupContent)
+          .openPopup();
 
-          const marker = L.marker([latitude, longitude])
-            .addTo(map)
-            .bindPopup(`${Development}: Available Lots - ${AvailableLots}`)
-            .openPopup();
+        return; // Skip the current iteration for invalid data
+      }
 
-          marker.on('click', () => {
-            const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
-            window.location.href = googleMapsUrl;
-          });
+      // Parse latitude and longitude for valid locations
+      const [latitude, longitude] = Location.split(' ').map(parseFloat);
 
-          marker.on('mouseover', () => {
-            marker.bindTooltip(popupContent).openTooltip();
-          });
+      if (isNaN(latitude) || isNaN(longitude)) {
+        console.error(`Invalid coordinates for Development: ${Development}`, { latitude, longitude });
+        return; // Skip this entry
+      }
 
-          marker.on('mouseout', () => {
-            marker.closeTooltip();
-          });
-        });
-      })
-      .catch((error) => {
-        console.error(error);
+      // Add valid marker
+      const popupContent = `<strong>${Development}</strong><br>Available Lots: ${AvailableLots}`;
+      const marker = L.marker([latitude, longitude])
+        .addTo(map)
+        .bindPopup(`${Development}: Available Lots - ${AvailableLots}`)
+        .openPopup();
+
+      // Add marker interactions
+      marker.on('click', () => {
+        window.location.href = `https://www.google.com/maps?q=${latitude},${longitude}`;
       });
+
+      marker.on('mouseover', () => {
+        marker.bindTooltip(popupContent).openTooltip();
+      });
+
+      marker.on('mouseout', () => {
+        marker.closeTooltip();
+      });
+    });
+  })
+  .catch((error) => console.error('Error fetching or processing data:', error));
+
+
+
+    // Fetch data from the server and add markers to the map
+    // fetch('/fetch-data')
+    //   .then((response) => response.json())
+    //   .then((data) => {
+    //     console.log(data); // Log the response data to the console
+    //     data.forEach((parking) => {
+    //       const { Location, Development, AvailableLots } = parking;
+    //       const [latitude, longitude] = Location.split(' ').map(parseFloat);
+
+    //       const popupContent = `
+    //         <strong>${Development}</strong><br>
+    //         Available Lots: ${AvailableLots}
+    //       `;
+
+    //       const marker = L.marker([latitude, longitude])
+    //         .addTo(map)
+    //         .bindPopup(`${Development}: Available Lots - ${AvailableLots}`)
+    //         .openPopup();
+
+    //       marker.on('click', () => {
+    //         const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
+    //         window.location.href = googleMapsUrl;
+    //       });
+
+    //       marker.on('mouseover', () => {
+    //         marker.bindTooltip(popupContent).openTooltip();
+    //       });
+
+    //       marker.on('mouseout', () => {
+    //         marker.closeTooltip();
+    //       });
+    //     });
+    //   })
+    //   .catch((error) => {
+    //     console.error(error);
+    //   });
 
   </script>
 
