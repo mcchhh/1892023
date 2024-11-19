@@ -163,24 +163,20 @@
 
       <tbody id="tableBody">
         <!-- Table rows will be dynamically generated here -->
-        <% for (const carpark of carparksData) { %>
-          <tr>
-            
-            <!-- <td><%= carpark.carparkNumber %></td> -->
-            <!-- <% const matchingCarparkInfo = carparkInfoData.find(info => info.car_park_no === carpark.carparkNumber); %> -->
-            <!--<% console.log('Matching carparkInfo for', carpark.carparkNumber, ':', matchingCarparkInfo); %>-->
-            <td><a href="#map" class="title-case"><%= matchingCarparkInfo ? matchingCarparkInfo.address : 'N/A' %></a></td>
-            <td><%= carpark.totalLots %></td>
-            <td><%= carpark.lotsAvailable %></td>
-            <td class="title-case"><%= matchingCarparkInfo ? matchingCarparkInfo.car_park_type : 'N/A' %></td>
-            <td class="title-case"><%= matchingCarparkInfo ? matchingCarparkInfo.free_parking : 'N/A' %></td>
-            <td class="title-case"><%= matchingCarparkInfo ? matchingCarparkInfo.night_parking : 'N/A' %></td>
-            <!-- <td>
-              <button type="button" id="save-to-telegram" class="custom=button" onclick="openTelegram()">Share Now</button>
-            </td> -->
-          </tr>
-          
-        <% } %>
+        <% const seenAddresses = new Set(); %>
+          <% for (const carpark of carparksData) { %>
+            <% const matchingCarparkInfo = carparkInfoData.find(info => info.car_park_no === carpark.carparkNumber); %>
+            <% if (!matchingCarparkInfo || seenAddresses.has(matchingCarparkInfo.address)) continue; %>
+            <% seenAddresses.add(matchingCarparkInfo.address); %>
+            <tr>
+              <td><a href="#map" class="title-case"><%= matchingCarparkInfo.address %></a></td>
+              <td><%= carpark.totalLots %></td>
+              <td><%= carpark.lotsAvailable %></td>
+              <td class="title-case"><%= matchingCarparkInfo.car_park_type %></td>
+              <td class="title-case"><%= matchingCarparkInfo.free_parking %></td>
+              <td class="title-case"><%= matchingCarparkInfo.night_parking %></td>
+            </tr>
+          <% } %>
       </tbody>
       
     </table>
