@@ -195,8 +195,9 @@ app.get('/locations', async(req,res)=>{
   }
 });
 
-//Logged in Locations 
-app.get('/loggedinlocations', async(req,res)=>{
+
+
+app.get('/loggedinlocationsnew', async(req,res)=>{
   try{
    let carparkInfoData = await new Promise((resolve, reject)=>{
     db.all('SELECT car_park_no, address, car_park_type, short_term_parking, free_parking, night_parking, type_of_parking_system FROM carparkinfo', (err, rows)=>{
@@ -218,27 +219,65 @@ app.get('/loggedinlocations', async(req,res)=>{
     });
    });
 
-   let newcarparkinfoData = await new Promise((resolve, reject)=>{
-    db.all('SELECT Area FROM newcarparkinfo', (err, rows)=>{
-      if(err){
-        reject(err);
-      } else{
-        resolve(rows);
-      }
-    });
-   });
-
    // Sort the carparksData array by carparkNumber
    carparksData = carparksData.slice().sort((a, b) => a.carparkNumber.localeCompare(b.carparkNumber));
    
    
-   res.render('loggedinlocations', {carparkInfoData, carparksData, newcarparkinfoData});
+   res.render('loggedinlocationsnew', {carparkInfoData, carparksData});
   //  res.render('map');
   } catch(error){
     console.error('Error fetching data:', error);
     res.status(500).send('An error occurred while fetching data.');
   }
 });
+
+
+// //Logged in Locations 
+// app.get('/loggedinlocations', async(req,res)=>{
+//   try{
+//    let carparkInfoData = await new Promise((resolve, reject)=>{
+//     db.all('SELECT car_park_no, address, car_park_type, short_term_parking, free_parking, night_parking, type_of_parking_system FROM carparkinfo', (err, rows)=>{
+//       if(err){
+//         console.error("Error fetchig carparkinfo data:", err);
+//         reject(err);
+//       } else{
+//         console.log("carparkInfoData:", rows);
+//         resolve(rows);
+//       }
+//     });
+//    });
+
+//    let carparksData = await new Promise((resolve, reject)=>{
+//     db.all('SELECT carparkNumber, totalLots, lotsAvailable FROM carparks', (err, rows)=>{
+//       if(err){
+//         reject(err);
+//       } else{
+//         resolve(rows);
+//       }
+//     });
+//    });
+
+//    let newcarparkinfoData = await new Promise((resolve, reject)=>{
+//     db.all('SELECT Area FROM newcarparkinfo', (err, rows)=>{
+//       if(err){
+//         reject(err);
+//       } else{
+//         resolve(rows);
+//       }
+//     });
+//    });
+
+//    // Sort the carparksData array by carparkNumber
+//    carparksData = carparksData.slice().sort((a, b) => a.carparkNumber.localeCompare(b.carparkNumber));
+   
+   
+//    res.render('loggedinlocations', {carparkInfoData, carparksData, newcarparkinfoData});
+//   //  res.render('map');
+//   } catch(error){
+//     console.error('Error fetching data:', error);
+//     res.status(500).send('An error occurred while fetching data.');
+//   }
+// });
    
 
 
@@ -270,7 +309,9 @@ app.post('/save-favourite', (req, res) => {
 // Error Handling Middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).send('Something went wrong!');
+  //Temporarily log detailed errors in the catch block for debugging. 
+  res.status(500).send('Error: ${err.message}');
+  // res.status(500).send('Something went wrong!');
 });
 
 
